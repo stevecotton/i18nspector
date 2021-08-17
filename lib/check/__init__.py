@@ -47,6 +47,7 @@ from lib.check.msgformat import c as msgformat_c
 from lib.check.msgformat import perlbrace as msgformat_perlbrace
 from lib.check.msgformat import pybrace as msgformat_pybrace
 from lib.check.msgformat import python as msgformat_python
+from lib.check.msgformat import wmlvar as msgformat_wmlvar
 from lib.check.msgrepr import message_repr
 
 class EnvironmentNotPatched(RuntimeError):
@@ -105,6 +106,7 @@ class Checker(metaclass=abc.ABCMeta):
             'perl-brace': msgformat_perlbrace.Checker(self),
             'python': msgformat_python.Checker(self),
             'python-brace': msgformat_pybrace.Checker(self),
+            'wml-variables': msgformat_wmlvar.Checker(self),
         }
 
     @abc.abstractmethod
@@ -1007,6 +1009,7 @@ class Checker(metaclass=abc.ABCMeta):
             checker.check_message(ctx, message, flags)
         if re.match(r'\Atype: Content of: (<{xmlname}>)+\Z'.format(xmlname=xml.name_re), message.comment or ''):
             self._check_message_xml_format(ctx, message, flags)
+        self._message_format_checkers['wml-variables'].check_message(ctx, message, flags)
 
     def _check_message_xml_format(self, ctx, message, flags):
         if ctx.encoding is None:

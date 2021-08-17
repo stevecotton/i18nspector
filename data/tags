@@ -1176,4 +1176,16 @@ description =
  according to i18nspector's linguistic data.
  (But there are no translated messages which use plural forms.)
 
+[wml-variables-format-string-missing-argument]
+severity = serious
+certainty = possible
+description =
+ A WML string ``msgstr`` uses a variable name that isn't used in ``msgid``.
+
+[wml-variables-format-string-unknown-variable]
+severity = serious
+certainty = possible
+description =
+ A WML string ``msgstr`` doesn`t access a variable that's used in ``msgid``.
+
 # vim:ft=dosini

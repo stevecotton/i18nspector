@@ -48,7 +48,8 @@ class Checker(metaclass=abc.ABCMeta):
             else:
                 try:
                     fmt = self.backend.FormatString(s)
-                except self.backend.Error:
+                except self.backend.Error as e:
+                    print(e)
                     # If msgid isn't even a valid format string, then
                     # reporting errors against msgstr is not worth the trouble.
                     return
