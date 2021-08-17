@@ -25,9 +25,24 @@ Wesnoth Markup Language's variable-substitutions
 
 import re
 
+# Try to match sufficiently closely to Wesnoth's do_interpolation function.
+# Sample input would be "I picked up $item[$i].name.", where do_interpolation
+# defines that the trailing '.' is not part of the name.
+#
+# For the purpose of checking translations, treat the "$" as part of the name.
+# 
+# The regexp has one line to ensure that one or two letter names such as "$x or
+# $x1" can be matched; and then a second one assuming at least three characters
+# in additon to the "$".
+#
+# The re.ASCII flag is because Wesnoth supports Chinese (etc) characters
+# following a variable name with no space separating them.
 _field_re = re.compile(r'''
-    \$ (?P<name> [\w][\.\w]+ )
-''', re.VERBOSE)
+    (?P<name>
+        (\$ [\w]+ ) |
+        (\$ [\w\$] [\w\[\]\$\.]+ [\w\]])
+    )
+''', flags=(re.ASCII | re.VERBOSE))
 
 def _printable_prefix(s, r=re.compile('[ -\x7E]+')):
     return r.match(s).group()
