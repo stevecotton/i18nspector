@@ -1182,6 +1182,17 @@ certainty = possible
 description =
  A WML string ``msgstr`` uses a variable name that isn't used in ``msgid``.
 
+[wml-variables-format-string-printf-style]
+severity = serious
+certainty = certain
+description =
+ The msgstr includes printf style ``%d``, ``%s`` or ``%x``, but the msgid does
+ not. This is likely to mean that a fuzzy string has been marked as correct
+ without changing the printf substitutions to WML variable names.
+ .
+ There are still a few translated strings that must include ``%d`` for
+ strftime, but these would also have strftime substitutions in the msgid.
+
 [wml-variables-format-string-unknown-variable]
 severity = serious
 certainty = possible

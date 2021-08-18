@@ -41,8 +41,8 @@ class Checker(CheckerBase):
         def sort_key(item):
             return (isinstance(item, str), item)
         prefix = message_repr(message, template='{}:')
-        src_args = src_fmt.arguments
-        dst_args = dst_fmt.arguments
+        src_args = frozenset([x for x in src_fmt.arguments if not x.startswith('%')])
+        dst_args = frozenset([x for x in dst_fmt.arguments if not x.startswith('%')])
         for key in sorted(dst_args - src_args, key=sort_key):
             self.tag('wml-variables-format-string-unknown-variable', prefix, key,
                 tags.safestr('in'), tags.safestr(dst_loc),
@@ -56,6 +56,15 @@ class Checker(CheckerBase):
                 tags.safestr('not in'), tags.safestr(dst_loc),
                 tags.safestr('while in'), tags.safestr(src_loc),
             )
+
+        # Check for %d etc in the dst, unless the src looks like a strftime string
+        if not any([x.startswith('%') for x in src_fmt.arguments]):
+            dst_printfs = [x for x in dst_fmt.arguments if x.startswith('%')]
+            if len(dst_printfs) > 0:
+                self.tag('wml-variables-format-string-printf-style', prefix, ', '.join(dst_printfs),
+                    tags.safestr('in'), tags.safestr(dst_loc),
+                    tags.safestr('but not in'), tags.safestr(src_loc),
+                )
 
     def check_message(self, ctx, message, flags):
         #print ("\n\ncheck_message", message)

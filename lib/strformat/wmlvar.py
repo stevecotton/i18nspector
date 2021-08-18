@@ -44,6 +44,13 @@ _field_re = re.compile(r'''
     )
 ''', flags=(re.ASCII | re.VERBOSE))
 
+# This needs to catch strftime msgids too, thus the inclusion of %A and %M.
+_printf_style_re = re.compile(r'''
+    (?P<name>
+        %\d*[dsxAM]
+    )
+''', flags=(re.ASCII | re.VERBOSE))
+
 def _printable_prefix(s, r=re.compile('[ -\x7E]+')):
     return r.match(s).group()
 
@@ -61,9 +68,12 @@ class FormatString():
             argname = match.group('name')
             if argname is not None:
                 arguments.add(argname)
+        for match in _printf_style_re.finditer(s):
+            items += [match.group()]
+            argname = match.group('name')
+            if argname is not None:
+                arguments.add(argname)
         self.arguments = frozenset(arguments)
-        #if self.arguments:
-            #print("Found arguments:", self.arguments)
 
     def __iter__(self):
         return iter(self._items)
