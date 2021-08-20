@@ -30,17 +30,27 @@ import re
 # defines that the trailing '.' is not part of the name.
 #
 # For the purpose of checking translations, treat the "$" as part of the name.
-# 
-# The regexp has one line to ensure that one or two letter names such as "$x or
-# $x1" can be matched; and then a second one assuming at least three characters
-# in additon to the "$".
 #
 # The re.ASCII flag is because Wesnoth supports Chinese (etc) characters
 # following a variable name with no space separating them.
+# 
+# The set of characters accepted in the middle of the name is a superset of
+# both the set for the first character and the set for the final one, so the
+# regexp ought to be made up of blocks of three character classes. To simplify
+# it a bit, the regexp uses just two: the ones that can be in the middle, and
+# the subset that can be at the end. This will have a false positive on things
+# such as "$.A" and "$]A", but those are probably errors anyway.
+#
+# The more complex line has to come first, as the other can match a substring.
+# This will parse "$player_$side_number|.mining.progress" as a single variable
+# name. It needs to be a treated as a single name to catch the case that the
+# translation uses "...|.farming.progress" instead.
+#
+# Only one level of WML variable name nesting is supported so far.
 _field_re = re.compile(r'''
     (?P<name>
-        (\$ [\w]+ ) |
-        (\$ [\w\$] [\w\[\]\$\.]+ [\w\]])
+        (\$ [\w\[\]\$\.]* (\$ [\w\[\]\$\.]* [\w\]] \|) [\w\[\]\$\.]* [\w\]]) |
+        (\$ [\w\[\]\$\.]* [\w\]])
     )
 ''', flags=(re.ASCII | re.VERBOSE))
 
