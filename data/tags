@@ -1177,10 +1177,13 @@ description =
  (But there are no translated messages which use plural forms.)
 
 [wml-variables-format-string-missing-argument]
-severity = serious
+severity = normal
 certainty = possible
 description =
- A WML string ``msgstr`` uses a variable name that isn't used in ``msgid``.
+ A WML string ``msgstr`` doesn`t access a variable that's used in ``msgid``.
+ This is not always an error - for example, some messages use a variable for
+ the name of the person being addressed, but the translation may have rephrased
+ it to avoid a grammatical dependency on the gender of that person.
 
 [wml-variables-format-string-printf-style]
 severity = serious
@@ -1197,6 +1200,6 @@ description =
 severity = serious
 certainty = possible
 description =
- A WML string ``msgstr`` doesn`t access a variable that's used in ``msgid``.
+ A WML string ``msgstr`` uses a variable name that isn't used in ``msgid``.
 
 # vim:ft=dosini
