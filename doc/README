@@ -6,6 +6,54 @@ catalogues (PO) and compiled message catalogues (MO) files for common problems.
 These files are used by the GNU gettext translation functions and tools in
 many different development environments.
 
+Wesnoth support
+===============
+
+This branch is a fork adding support for Wesnoth's WML variable names in
+strings, such as the "``$side_number``" in "``Side $side_number is winning``".
+It currently has enough logic to notice the mismatch between ``mining`` and
+``farming`` in::
+
+   msgid "Your farms now generate $player_$side_number|.farming.progress gold"
+   msgstr "... $player_$side_number|.mining.progress ..."
+
+Quick start for running it on Wesnoth's files
+---------------------------------------------
+
+Clone or unzip this tool to a directory, for example ``~/tools/i18nspector/main``
+
+With your command prompt in the top-level Wesnoth directory, the command to
+check all of the ``de.po`` (German translation) files would be::
+
+   ~/tools/i18nspector/main/i18nspector po/*/de.po | grep wml
+
+Each line of output starts with either ``E`` for an error, or ``W`` for a
+warning. Typos in variable names will result in a pair - one error that there's
+an unrecognised variable name in the ``msgstr``, and one warning that a
+variable in the ``msgid`` isn't used in translated text.
+
+This assumes that your command-line runs Python files as executables.
+
+It will report various things that in Wesnoth we currently don't worry about,
+so to filter down to only the ones that are high priority for Wesnoth
+translations follow the command with "``| grep wml``".
+
+Could this be added to the Wesnoth CI?
+--------------------------------------
+
+No, because it has false positives. A string such as "``Should $unit.name take
+the sword?``" might omit the unit's name from the translated text, either
+because individuals' names are less commonly used in the target language, or as
+a workaround for the English text not providing the gender of the unit.
+
+Will this be submitted back to the main i18nspector repo?
+---------------------------------------------------------
+
+Not without being reworked first. This branch assumes that all strings should
+have Wesnoth syntax, even those that come from C++ files. This fits with
+Wesnoth, but it's a shortcut that would need to replaced with proper handling
+before the changes could merge.
+
 Prerequisites
 =============
 
